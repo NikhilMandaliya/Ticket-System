@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-textdirection="ltr">
+<!-- BEGIN: Head-->
+
+<head>
+    <%- include('_layouts/head') %>
+    <title>Create User | <%= title %></title>
+</head>
+<!-- END: Head-->
+
+<body class="vertical-layout page-header-light vertical-menu-collapsible vertical-dark-menu preload-transitions 2-columns" data-open="click" data-menu="vertical-dark-menu" data-col="2-columns">
+    <%- include('_layouts/sidenavbar') %>
+
+    <!-- BEGIN: Page Main-->
+    <div id="main">
+        <div class="row">
+            <div id="breadcrumbs-wrapper" data-image="/app-assets/images/gallery/breadcrumb-bg.jpg">
+                <div class="container">
+                    <div class="row">
+                        <div class="col s12 m6 l6">
+                            <h5 class="breadcrumbs-title mt-0 mb-0"><a class="mr-2" href="/user"><i class="material-icons">arrow_back</i></a><span>Create User</span></h5>
+                        </div>
+                        <div class="col s12 m6 l6 right-align-md">
+                            <ol class="breadcrumbs mb-0">
+                                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                                <li class="breadcrumb-item"><a href="/user">User</a></li>
+                                <li class="breadcrumb-item active">Create User</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="">
+                <div class="container">
+                    <div class="section">
+                        <div class="row">
+                            <div class="col s12">
+                                <%- messages('messages', locals) %>
+                            </div>
+                        </div>
+                        <form method="POST" onsubmit="validate()" action="/user/create" id="form">
+                            <div class="col s12">
+                                <div class="card">
+                                    <div class="card-content">
+                                        <div class="row">
+                                            <div class="input-field col m4 s12">
+                                                <input placeholder="Name" id="name" name="name" type="text">
+                                                <label for="name">Name</label>
+                                                <small>
+                                                    <div id="errorName" class="error"></div>
+                                                </small>
+                                            </div>
+                                            <div class="input-field col m4 s12">
+                                                <input placeholder="Email" id="email" name="email" type="text">
+                                                <label for="email">Email</label>
+                                                <small>
+                                                    <div id="errorEmail" class="error"></div>
+                                                </small>
+                                            </div>
+                                            <div class="input-field col m4 s12">
+                                                <select id="role" name="role">
+                                                    <option value="client">Client</option>
+                                                    <option value="employee">Employee</option>
+                                                    <option value="manager">Manager</option>
+                                                    <option value="admin">Admin</option>
+                                                </select>
+                                                <label>Select role</label>
+                                            </div>
+                                            <div class="input-field col m6 s12">
+                                                <input class="password" placeholder="Password" id="password" name="password" type="password" readonly onfocus="this.removeAttribute('readonly');"> <!-- readonly to stop auto fill email pass -->
+                                                <label for="password">Password</label>
+                                                <small>
+                                                    <div id="errorPass" class="error"></div>
+                                                </small>
+                                            </div>
+                                            <div class="input-field col m6 s12">
+                                                <input class="password" placeholder="Password" id="passwordConfirm" name="passwordConfirm" type="password" readonly onfocus="this.removeAttribute('readonly');"> <!-- readonly to stop auto fill email pass -->
+                                                <label for="passwordConfirm">Confirm password</label>
+                                                <small>
+                                                    <div id="errorCfPass" class="error"></div>
+                                                </small>
+                                            </div>
+                                            <div class="col s12 mb-2">
+                                                <p>
+                                                    <label>
+                                                        <input id="showPassword" type="checkbox" onclick="togglePassword()">
+                                                        <span>Show Password</span>
+                                                    </label>
+                                                </p>
+                                            </div>
+                                            <div class="col s12">
+                                                <button type="submit" class="btn purple" id="submitBtn">Submit</button>
+                                                <a onclick="history.back()" class="btn btn-danger ml-1">Cancel</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="content-overlay"></div>
+            </div>
+        </div>
+    </div>
+    <!-- END: Page Main-->
+
+    <%- include('_layouts/commonJs') %>
+    <script>
+        const formC = document.getElementById('form');
+        formC.addEventListener('submit', (e) => {
+            e.preventDefault();
+        })
+
+        function validate() {
+            let returnVal = true;
+
+            const nameValue = document.getElementById('name').value.trim();
+            const emailValue = document.getElementById('email').value.trim();
+            const passwordValue = document.getElementById('password').value.trim();
+            const cfpassValue = document.getElementById('passwordConfirm').value.trim();
+
+            if (nameValue == '') {
+                setError('errorName', 'Name is required.');
+                return;
+            } else {
+                document.getElementById('errorName').innerText = '';
+            }
+
+            if (emailValue == '') {
+                setError('errorEmail', 'Please enter email.');
+                return;
+            } else if (!validateEmail(emailValue)) {
+                setError('errorEmail', 'Please enter valid email.');
+                return;
+            } else {
+                document.getElementById('errorEmail').innerText = '';
+            }
+
+            if (passwordValue == '') {
+                setError('errorPass', 'Please enter new password.');
+                return;
+            } else if (passwordValue.length < 8) {
+                setError('errorPass', 'Please enter more than 8 character.');
+                return;
+            } else {
+                document.getElementById('errorPass').innerText = '';
+            }
+
+            if (cfpassValue == '') {
+                setError('errorCfPass', 'Please enter confirm password.');
+                return;
+            } else if (cfpassValue != passwordValue) {
+                setError('errorCfPass', 'New password and confirm password do not match.');
+                return;
+            } else {
+                document.getElementById('errorCfPass').innerText = '';
+            }
+
+            document.getElementById('submitBtn').disabled = true;
+            formC.submit();
+        }
+
+        function setError(elementId, error) {
+            const element = document.getElementById(elementId)
+            element.innerText = error;
+            element.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center',
+            });
+        }
+
+        function validateEmail(email) {
+            return email.match(
+                /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            );
+        }
+
+        function togglePassword() {
+            const x = document.getElementsByClassName("password");
+
+            let type = x[0].type;
+            if (type === "password") {
+                type = "text";
+            } else {
+                type = "password";
+            }
+            for (let i = 0; i < x.length; i++) {
+                x[i].type = type;
+            }
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/js/dropify.min.js"></script>
+    <script src="/app-assets/js/scripts/form-file-uploads.min.js"></script>
+</body>
+
+</html>

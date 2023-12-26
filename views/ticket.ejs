@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-textdirection="ltr">
+<!-- BEGIN: Head-->
+
+<head>
+    <%- include('_layouts/head') %>
+    <title>Tickets | <%= title %></title>
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/data-tables/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/data-tables/extensions/responsive/css/responsive.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/data-tables/css/select.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/pages/data-tables.css">
+</head>
+<!-- END: Head-->
+
+<body class="vertical-layout page-header-light vertical-menu-collapsible vertical-dark-menu preload-transitions 2-columns" data-open="click" data-menu="vertical-dark-menu" data-col="2-columns">
+
+    <%- include('_layouts/sidenavbar') %>
+
+    <!-- BEGIN: Page Main-->
+    <div id="main">
+        <div class="row">
+            <div id="breadcrumbs-wrapper" data-image="/app-assets/images/gallery/breadcrumb-bg.jpg">
+                <!-- Search for small screen-->
+                <div class="container">
+                    <div class="row">
+                        <div class="col s12 m6 l6">
+                            <h5 class="breadcrumbs-title mt-0 mb-0"><a class="mr-2" href="/"><i class="material-icons">arrow_back</i></a><span>Tickets</span></h5>
+                        </div>
+                        <div class="col s12 m6 l6 right-align-md">
+                            <% if (role === 'client') { %>
+                            <a class="btn gradient-45deg-purple-deep-orange pull-right btn-breadcrumbs" href="/ticket/create">Create ticket</a>
+                            <% } else { %>
+                            <ol class="breadcrumbs mb-0">
+                                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                                <li class="breadcrumb-item active">Tickets</li>
+                            </ol>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col s12">
+                <div class="container">
+                    <div class="section section-data-tables">
+                        <!-- Page Length Options -->
+                        <div class="row">
+                            <div class="col s12">
+                                <div class="card">
+                                    <div class="card-content">
+                                        <%- messages('messages', locals) %>
+                                        <div class="row">
+                                            <div class="col s12 overflow">
+                                                <table id="page-length-option" class="display">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Sr</th>
+                                                            <th>Title</th>
+                                                            <th>Image</th>
+                                                            <th>Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <% for( let i=0; i < tickets.length; i++ ) { %>
+                                                        <tr>
+                                                            <td><%= i+1 %></td>
+                                                            <td><%= tickets[i].title %></td>
+                                                            <td><img src="<%= tickets[i].image %>" alt="IMG" height="40" onerror="this.onerror=null; this.src='/uploads/no_image_available_3.jpg';"></td>
+                                                            <td style="max-width: 200px;">
+                                                                <% if (role === 'client') { %>
+                                                                <a href="/ticket/edit/<%= tickets[i].id %>"><i class="material-icons">create</i></a>
+                                                                <a href="/ticket/delete/<%= tickets[i].id %>" onclick="return confirm('Are you sure?')"><i class="material-icons">delete</i></a>
+                                                                <% } else if (role === 'employee') { %>
+                                                                <a href="/ticket/add-employee-remarks/<%= tickets[i].id %>"><i class="material-icons">comment</i></a>
+                                                                <% } else if (role === 'manager') { %>
+                                                                <a href="/ticket/add-manager-remarks/<%= tickets[i].id %>"><i class="material-icons">comment</i></a>
+                                                                <a href="/ticket/manager-disapprove/<%= tickets[i].id %>"><i class="material-icons">thumb_down</i></a>
+                                                                <% } else if (role === 'admin') { %>
+                                                                <a href="/ticket/add-admin-remarks/<%= tickets[i].id %>"><i class="material-icons">comment</i></a>
+                                                                <a href="/ticket/admin-disapprove/<%= tickets[i].id %>"><i class="material-icons">thumb_down</i></a>
+                                                                <% } %>
+                                                            </td>
+                                                        </tr>
+                                                        <% } %>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="content-overlay"></div>
+            </div>
+        </div>
+    </div>
+    <!-- END: Page Main-->
+
+    <%- include('_layouts/commonJs') %>
+    <script src="/app-assets/vendors/data-tables/js/jquery.dataTables.min.js"></script>
+    <script src="/app-assets/js/scripts/data-tables.js"></script>
+</body>
+
+</html>
